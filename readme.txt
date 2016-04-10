@@ -11,12 +11,13 @@ Project 1
 ================================================================================
 
 DONE:
-* create.sql (mostly)
-* load.sql (I think it's done)
+* create.sql (still need constaints from last part of project)
+* load.sql
 * queries.sql
 
 TODO:
 * team.txt needs Lui's UID (make sure formatting is correct)
 * readme.txt needs Lui's name
 * query.php
+	- limited query functionality
 * violate.sql
