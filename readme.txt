@@ -1,4 +1,4 @@
-<insert partner name here> & Wesley Minner
+Yuanchen Liu & Wesley Minner
 
 CS 143 Database Systems
 Professor Carlo Zaniolo
