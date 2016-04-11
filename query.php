@@ -12,25 +12,31 @@
 <body>
 
 <h2>Enter MySQL query below:</h2>
-<p>
-<form action="<?php $_PHP_SELF ?>" method="GET">
-<textarea name="query" cols="80" rows="10"><?php echo htmlspecialchars($_GET['query']); ?></textarea><br />
-<input type="submit" value="Submit"/>
-</form>
-</p>
-<p>Table reference:</p>
-    <ul><li>Movie</li>
-        <li>Actor</li>
-        <li>Sales</li>
-        <li>Director</li>
-        <li>MovieGenre</li>
-        <li>MovieDirector</li>
-        <li>MovieActor</li>
-        <li>MovieRating</li>
-        <li>Review</li>
-        <li>MaxPersonID</li>
-        <li>MaxMovieID</li>
-    </ul>
+<table cellspacing="10">
+    <tr>
+        <td>
+        <form action="<?php $_PHP_SELF ?>" method="GET">
+        <textarea name="query" cols="65" rows="15"><?php echo htmlspecialchars($_GET['query']); ?></textarea><br />
+        <input type="submit" value="Submit"/>
+        </form>
+        </td>
+
+        <td>Table reference:
+            <ul><li>Movie(id, title, year, rating, company)</li>
+                <li>Actor(id last, first, sex, dob, dod)</li>
+                <li>Sales(mid, ticketsSold, totalIncome)</li>
+                <li>Director(id, last, first, dob, dod)</li>
+                <li>MovieGenre(mid, genre)</li>
+                <li>MovieDirector(mid, did)</li>
+                <li>MovieActor(mid, aid, role)</li>
+                <li>MovieRating(mid, imdb, rot)</li>
+                <li>Review(name, time, mid, rating, comment)</li>
+                <li>MaxPersonID(id)</li>
+                <li>MaxMovieID(id)</li>
+            </ul>
+        </td>
+    </tr>
+</table>
 
 </body>
 
@@ -51,12 +57,6 @@ if (!$db_connection) {
     exit(1);
 }
 
-// DEBUG
-// $db_list = mysql_list_dbs($db_connection);
-// while ($row = mysql_fetch_object($db_list)) {
-//     echo $row->Database . "<br />"; 
-// }
-
 // Switch to desired database
 $db_selected = mysql_select_db($desired_db, $db_connection);
 if (!$db_selected) {
@@ -72,7 +72,7 @@ if ( $_GET["query"] ) {
 
 // Process query and print results
 if ($query_str) {
-    echo "Here is the query you entered:<br />" . $query_str . "<br />";
+    echo "Here is the query you entered:<br />\"" . $query_str . "\"<br />";
     $result = mysql_query($query_str, $db_connection);
     mysql_close($db_connection);
     displayResult($result);
@@ -87,13 +87,35 @@ function processQuery($text) {
     return $text;
 }
 
-function displayResult($resource) {
-    while ($row = mysql_fetch_row($resource)) {
-        $mid = $row[0];
-        $ticketsSold = $row[1];
-        $totalIncome = $row[2];
-        print "$mid, $ticketsSold, $totalIncome<br />";
+function displayResult($rs) {
+    $num_fields = mysql_num_fields($rs);
+    echo "<h2>Results:</h2>";
+
+    if (mysql_num_rows($rs) > 0) {
+        // BEGIN table header
+        echo "<table border=1 cellspacing=2 cellpadding=2><tr>";
+        for ($i=0; $i < $num_fields; $i++)
+            echo "<th>" . mysql_fetch_field($rs)->name . "</th>";
+        echo "</tr>";
+        // END table header
+
+        // BEGIN data rows
+        while ($row = mysql_fetch_row($rs)) {
+            echo "<tr>";
+            for ($j=0; $j < $num_fields; $j++) {
+                if (is_null($row[$j]))
+                    echo "<td>N/A</td>";
+                else
+                    echo "<td>" . $row[$j] . "</td>";
+            }
+            echo "</tr>";
+        }
+        // END data rows
+        echo "</table>";
+    } else {
+        echo "0 results found.<br />";
     }
+    mysql_free_result($rs);
 }
 ?>
 

@@ -9,6 +9,10 @@ DB = TEST
 DIST_SOURCES = readme.txt team.txt create.sql load.sql queries.sql \
 	query.php violate.sql
 
+# Copy and rename index.php from ~/www/ to ~/Project1/ git committing
+phpcopy:
+	cp ~/www/index.php ~/Project1/query.php
+
 create: create.sql
 	mysql $(DB) < create.sql
 

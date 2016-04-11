@@ -14,10 +14,9 @@ DONE:
 * create.sql (still need constaints from last part of project)
 * load.sql
 * queries.sql
+* query.php
 
 TODO:
 * team.txt needs Lui's UID (make sure formatting is correct)
 * readme.txt needs Lui's name
-* query.php
-	- limited query functionality
 * violate.sql
