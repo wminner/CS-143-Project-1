@@ -19,19 +19,21 @@ CREATE TABLE Actor (
 );
 
 -- Not sure about primary key or NULLs
+-- mid itself should be enough since there is no other column in the table that can differetiate two tuples with different income/tickets for a given movie
 CREATE TABLE Sales (
 	mid INT NOT NULL,
 	ticketsSold INT NOT NULL,
 	totalIncome INT,
-	PRIMARY KEY (mid, ticketsSold),
+	PRIMARY KEY (mid),
 	FOREIGN KEY (mid) REFERENCES Movie(id) ON DELETE CASCADE
 )	ENGINE = InnoDB;
+
 
 CREATE TABLE Director (
 	id INT NOT NULL AUTO_INCREMENT,
 	last VARCHAR(20) NOT NULL,
 	first VARCHAR(20) NOT NULL,
-	dob DATE NOT NULL,
+	dob DATE NOT NULL, 
 	dod DATE,
 	PRIMARY KEY (id)
 );
@@ -61,22 +63,24 @@ CREATE TABLE MovieActor (
 )	ENGINE = InnoDB;
 
 -- Not sure about primary key or NULLs
+-- Either of imdb or rot can be missing for a giving movie rating. We may be able to ensure constaints during data ingest
 CREATE TABLE MovieRating (
 	mid INT NOT NULL,
-	imdb INT NOT NULL,
+	imdb INT,
 	rot INT,
-	PRIMARY KEY (mid, imdb),
+	PRIMARY KEY (mid),
 	FOREIGN KEY (mid) REFERENCES Movie(id) ON DELETE CASCADE
 )	ENGINE = InnoDB;
 
 -- Not sure about primary key or NULLs
+-- I assume a user can post review for a given movie multiple times.
 CREATE TABLE Review (
 	name VARCHAR(20) NOT NULL,
-	time TIMESTAMP,
+	time TIMESTAMP NOT NULL, 
 	mid INT NOT NULL,
 	rating INT,
 	comment VARCHAR(500),
-	PRIMARY KEY (name, mid),
+	PRIMARY KEY (name, time, mid),
 	FOREIGN KEY (mid) REFERENCES Movie(id) ON DELETE CASCADE
 )	ENGINE = InnoDB;
 
