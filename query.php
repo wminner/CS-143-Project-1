@@ -89,7 +89,9 @@ function processQuery($text) {
 
 function displayResult($rs) {
     $num_fields = mysql_num_fields($rs);
+    $num_rows = mysql_num_rows($rs);
     echo "<h2>Results:</h2>";
+    echo "Found " . $num_rows . " result(s).<br /><br />";
 
     if (mysql_num_rows($rs) > 0) {
         // BEGIN table header
@@ -112,8 +114,6 @@ function displayResult($rs) {
         }
         // END data rows
         echo "</table>";
-    } else {
-        echo "0 results found.<br />";
     }
     mysql_free_result($rs);
 }

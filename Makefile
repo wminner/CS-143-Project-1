@@ -10,8 +10,12 @@ DIST_SOURCES = readme.txt team.txt create.sql load.sql queries.sql \
 	query.php violate.sql
 
 # Copy and rename index.php from ~/www/ to ~/Project1/ git committing
-phpcopy:
+phpcommit:
 	cp ~/www/index.php ~/Project1/query.php
+
+# Copy query.php to ~/www/ for testing using "http://localhost:1438/~cs143/"
+phptest:
+	cp ~/Project1/query.php ~/www/index.php
 
 create: create.sql
 	mysql $(DB) < create.sql
