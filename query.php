@@ -47,7 +47,7 @@
 
 // Initialize variables
 $query_str = $result = "";
-$desired_db = "TEST";
+$desired_db = "CS143";
 
 // Connect to mysql and check for errors
 $db_connection = mysql_connect("localhost", "cs143", "");

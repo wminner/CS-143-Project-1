@@ -29,8 +29,4 @@ DONE:
 * load.sql
 * queries.sql
 * query.php
-
-TODO:
-* team.txt needs Lui's UID (make sure formatting is correct)
-* readme.txt needs Lui's name
 * violate.sql

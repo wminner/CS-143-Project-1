@@ -71,4 +71,4 @@ UPDATE MovieRating
 -- 3. Rating should be between 1 and 5
 
 INSERT INTO Review
-	VALUES('Lui', '2016-04-14', (SELECT MAX(id) FROM Movie), 6, 'Hello World');
+	VALUES('Lui', '2016-04-14 00:00:00', (SELECT MAX(id) FROM Movie), 6, 'Hello World');
