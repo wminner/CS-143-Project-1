@@ -18,7 +18,7 @@ WHERE num_acted.num_movies >= 2;
 
 -- Query 3
 -- Title of movies that sell more than 1,000,000 tickets
-SELECT "Movies that sold more than 1,000,000 tickets"
+SELECT m.title as "Movies that sold more than 1,000,000 tickets"
 FROM Movie AS m, Sales AS s
 WHERE m.id = s.mid
 AND ticketsSold > 1000000;
