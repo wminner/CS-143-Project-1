@@ -15,33 +15,57 @@
 		<table cellspacing="10">
 			<tr>
 				<td>Title<span style="color:red">*</span>:</td>
-				<td>
-					<input type="text" name="title" size="20" maxlength="20" required>
-				</td>
+				<td><input type="text" name="title" size="20" maxlength="20" required></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>IMDB Score:</td>
+				<td><input type="number" name="imdb" min="0" max="10" step="0.1" style="max-width:50px">&nbsp&nbsp(0.0-10.0)</td>
 			</tr>
 			<tr>
 				<td>Company:</td>
-				<td>
-					<input type="text" name="company" size="20" maxlength="20">
-				</td>
+				<td><input type="text" name="company" size="20" maxlength="20"></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>Rotten Tomatoes Score:</td>
+				<td><input type="number" name="rot" min="0" max="10" step="0.1" style="max-width:50px">&nbsp&nbsp(0.0-10.0)</td>
 			</tr>
 			<tr>
 				<td>Year:</td>
-				<td>
-					<input type="text" name="year" size="20" maxlength="20">
-					(YYYY)
+				<td><input type="text" name="year" size="20" maxlength="4"></td>
+			</tr>
+			<tr>
+				<td>Genre:</td>
+				<td><input type="text" name="genre" list="genre" size="20" />
+					<datalist id="genre">
+						<option>Action</option>
+						<option>Adult</option>
+						<option>Adventure</option>
+						<option>Animation</option>
+						<option>Comedy</option>
+						<option>Crime</option>
+						<option>Documentary</option>
+						<option>Drama</option>
+						<option>Family</option>
+						<option>Fantasy</option>
+						<option>Horror</option>
+						<option>Musical</option>
+						<option>Mystery</option>
+						<option>Romance</option>
+						<option>Sci-Fi</option>
+						<option>Short</option>
+						<option>Thriller</option>
+						<option>War</option>
+						<option>Western</option>
+					</datalist>
 				</td>
 			</tr>
 			<tr>
 				<td>MPAA Rating:</td>
-				<td>
-					<select name="rating">>
-						<option value="NULL"></option>
-						<option value="G">G</option>
-						<option value="PG">PG</option>
-						<option value="PG-13">PG-13</option>
-						<option value="R">R</option>
-						<option value="NC-17">NC-17</option>
+				<td><select name="rating" style="min-width:100%">
+					<option value="NULL"></option>
+					<option value="G">G</option>
+					<option value="PG">PG</option>
+					<option value="PG-13">PG-13</option>
+					<option value="R">R</option>
+					<option value="NC-17">NC-17</option>
 					</select>
 				</td>
 			</tr>
@@ -98,23 +122,65 @@
 			else
 				$year = "NULL";
 
+			$genre = "";
+			if (!empty($_GET["genre"]))
+				$genre = "\"" . mysql_real_escape_string($_GET["genre"]) . "\"";
+			else
+				$genre = "NULL";
+
 			// TODO verify valid mpaa rating
 			$rating = "";
 			if (!empty($_GET["rating"]))
 				$rating = "\"" . mysql_real_escape_string($_GET["rating"]) . "\"";
 			else
 				$rating = "NULL";
-			echo "Parsing completed: title = $title, company = $company, year = $year, rating = $rating" . "<br /><br />";
 
-			// Construct the INSERT statement
-			$insert_str = "INSERT INTO Movie VALUES($id, $title, $year, $rating, $company)";
-			// echo "Query: " . $insert_str . "<br /><br />";
+			$imdb = "";
+			if (!empty($_GET["imdb"]))
+				$imdb = intval(10*mysql_real_escape_string($_GET["imdb"]));
+			else
+				$imdb = "NULL";
+
+			$rot = "";
+			if (!empty($_GET["rot"]))
+				$rot = intval(10*mysql_real_escape_string($_GET["rot"]));
+			else
+				$rot = "NULL";
+
+			// DEBUG
+			//echo "Parsing completed: title = $title, company = $company, year = $year, genre = $genre, rating = $rating, imdb = $imdb, rot = $rot" . "<br /><br />";
+
+			// Construct the INSERT statement(s)
+			$insert_movie_str = "INSERT INTO Movie VALUES($id, $title, $year, $rating, $company)";
+			if ($genre != "NULL")
+				$insert_genre_str = "INSERT INTO MovieGenre VALUES($id, $genre)";
+			else
+				$insert_genre_str = "NULL";
+			if ($imdb != "NULL" || $rot != "NULL")
+				$insert_rating_str = "INSERT INTO MovieRating VALUES($id, $imdb, $rot)";
+			else
+				$insert_rating_str = "NULL";
+			echo "Movie Query: " . $insert_movie_str . "<br />";
+			echo "MovieGenre Query: " . $insert_genre_str . "<br />";
+			echo "MovieRating Query: " . $insert_rating_str . "<br /><br />";
 			
 			// Execute the INSERT statement
-			if(!mysql_query($insert_str, $db_connection)){
+			$affected = 0;
+			if(!mysql_query($insert_movie_str, $db_connection)){
 				echo "ERROR: " . mysql_error($db_connection);
 				exit(1);
 			}
+			$affected += mysql_affected_rows($db_connection);
+			if ($insert_genre_str != "NULL" && !mysql_query($insert_genre_str, $db_connection)) {
+				echo "ERROR: " . mysql_error($db_connection);
+				exit(1);
+			}
+			$affected += mysql_affected_rows($db_connection);
+			if ($insert_rating_str != "NULL" && !mysql_query($insert_rating_str, $db_connection)) {
+				echo "ERROR: " . mysql_error($db_connection);
+				exit(1);
+			}
+			$affected += mysql_affected_rows($db_connection);
 
 			// Increment MaxMovieID
 			$update_id_str = "UPDATE MaxMovieID SET id = id + 1;";
@@ -123,7 +189,6 @@
 				exit(1);
 			}
 
-			$affected = mysql_affected_rows($db_connection);
 			echo "SUCCESS: Total affected rows: $affected<br/>";
 
 			// Close database connection 
