@@ -7,7 +7,7 @@ DB = TEST
 # DB = CS143
 
 1A_DIST_SOURCES = readme.txt team.txt sql/create.sql sql/load.sql sql/queries.sql \
-	sql/query.php sql/violate.sql
+	query.php sql/violate.sql
 
 1B_DIST_SOURCES = readme.txt team.txt sql www testcase
 
@@ -48,7 +48,7 @@ P1B.zip: $(1B_DIST_SOURCES)
 	rm -rf $(UID)
 	mkdir $(UID)
 	cp -r $(1B_DIST_SOURCES) $(UID)
-	# Remove 1A files from sql directory
+# Remove 1A files from sql directory
 	rm $(UID)/sql/clean.sql $(UID)/sql/queries.sql $(UID)/sql/violate.sql
 	zip -r $@ $(UID)
 	./p1b_test $(UID)
@@ -59,4 +59,4 @@ sqlclean: sql/clean.sql
 	mysql $(DB) < sql/clean.sql
 
 clean:
-	rm -rf $(UID) *.tmp *.zip *~ *\#
+	rm -rf $(UID) P1B.zip *~ *\#
