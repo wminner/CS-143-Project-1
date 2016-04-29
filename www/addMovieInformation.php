@@ -20,26 +20,28 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Company<span style="color:red">*</span>:</td>
+				<td>Company:</td>
 				<td>
-					<input type="text" name="company" size="20" maxlength="20" required>
+					<input type="text" name="company" size="20" maxlength="20">
 				</td>
 			</tr>
 			<tr>
-				<td>Year<span style="color:red">*</span>:</td>
+				<td>Year:</td>
 				<td>
-					<input type="text" name="year" size="20" maxlength="20" required>
+					<input type="text" name="year" size="20" maxlength="20">
+					(YYYY)
 				</td>
 			</tr>
 			<tr>
-				<td>MPAA Rating<span style="color:red">*</span>:</td>
+				<td>MPAA Rating:</td>
 				<td>
-					<select>
-						<option value="g">G</option>
-						<option value="pg">PG</option>
-						<option value="pg13">PG-13</option>
-						<option value="r">R</option>
-						<option value="nc17">NC-17</option>
+					<select name="rating">>
+						<option value="NULL"></option>
+						<option value="G">G</option>
+						<option value="PG">PG</option>
+						<option value="PG-13">PG-13</option>
+						<option value="R">R</option>
+						<option value="NC-17">NC-17</option>
 					</select>
 				</td>
 			</tr>
@@ -83,25 +85,30 @@
 
 			// Parse input data variables
 			$title = "\"" . mysql_real_escape_string($_GET["title"]) . "\"";
-			$company = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
-			$year = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
-			$rating = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
-			$dod = "";
-			if(!empty($_GET["dod"])){
-				$dod = "\"" . mysql_real_escape_string($_GET["dod"]) . "\"";
-			}else{
-				$dod = "NULL";
-			}
-			// echo "Parsing completed: firstName = $firstname, lastname = $lastname, gender = $gender, dob = $dob, dod = $dod";
+
+			$company = "";
+			if (!empty($_GET["company"]))
+				$company = "\"" . mysql_real_escape_string($_GET["company"]) . "\"";
+			else
+				$company = "NULL";
+
+			$year = "";
+			if (!empty($_GET["year"]))
+				$year = intval(mysql_real_escape_string($_GET["year"]));
+			else
+				$year = "NULL";
+
+			// TODO verify valid mpaa rating
+			$rating = "";
+			if (!empty($_GET["rating"]))
+				$rating = "\"" . mysql_real_escape_string($_GET["rating"]) . "\"";
+			else
+				$rating = "NULL";
+			echo "Parsing completed: title = $title, company = $company, year = $year, rating = $rating" . "<br /><br />";
 
 			// Construct the INSERT statement
-			$insert_str = "";
-			if($_GET["identity"]=="actor"){
-				$insert_str = "INSERT INTO Actor VALUES($id, $firstname, $lastname, $gender, $dob, $dod)";
-			}else{
-				$insert_str = "INSERT INTO Director VALUES($id, $firstname, $lastname, $dob, $dod)";
-			}
-			echo $insert_str;
+			$insert_str = "INSERT INTO Movie VALUES($id, $title, $year, $rating, $company)";
+			// echo "Query: " . $insert_str . "<br /><br />";
 			
 			// Execute the INSERT statement
 			if(!mysql_query($insert_str, $db_connection)){

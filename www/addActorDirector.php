@@ -37,6 +37,7 @@
 				<td>
 					<input type="radio" name="gender" value="Male" checked="true">Male
 					<input type="radio" name="gender" value="Female">Female
+					<input type="radio" name="gender" value="Unspecified">Unspecified
 				</td>
 			</tr>
 			<tr>
@@ -94,7 +95,11 @@
 			// Parse input data variables
 			$firstname = "\"" . mysql_real_escape_string($_GET["firstName"]) . "\"";
 			$lastname = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
-			$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
+			// TODO validate gender
+			if ($_GET["gender"] == "Unspecified")
+				$gender = "NULL";
+			else
+				$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
 			$dob = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
 			$dod = "";
 			if(!empty($_GET["dod"])){
@@ -107,11 +112,11 @@
 			// Construct the INSERT statement
 			$insert_str = "";
 			if($_GET["identity"]=="actor"){
-				$insert_str = "INSERT INTO Actor VALUES($id, $firstname, $lastname, $gender, $dob, $dod)";
+				$insert_str = "INSERT INTO Actor VALUES($id, $lastname, $firstname, $gender, $dob, $dod)";
 			}else{
-				$insert_str = "INSERT INTO Director VALUES($id, $firstname, $lastname, $dob, $dod)";
+				$insert_str = "INSERT INTO Director VALUES($id, $lastname, $firstname, $dob, $dod)";
 			}
-			echo $insert_str;
+			echo "Query: " . $insert_str . "<br /><br />";
 			
 			// Execute the INSERT statement
 			if(!mysql_query($insert_str, $db_connection)){
@@ -127,7 +132,7 @@
 			}
 
 			$affected = mysql_affected_rows($db_connection);
-			echo "SUCCESS: Total affected rows: $affected<br/>";
+			echo "SUCCESS: Total affected rows: $affected<br /><br />";
 
 			// Close database connection 
 			mysql_close($db_connection);
