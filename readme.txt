@@ -30,3 +30,14 @@ DONE:
 * queries.sql
 * query.php
 * violate.sql
+
+TODO:
+* AddActorDirector.php
+* AddMovieInformation.php
+* AddMovieActorRelation.php
+* AddMovieDirectorRelation.php
+* showActorInfo.php
+* showMovieInfo.php
+* searchActorMovie.php
+
+* Change $desired_db from TEST to CS143

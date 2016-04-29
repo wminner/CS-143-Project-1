@@ -3,54 +3,44 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>Add Actor/Director</title>
-	<meta name="description" content="Add Actor/Director">
+    <title>Add Movie Information</title>
+	<meta name="description" content="Add Movie Information">
 	<meta name="author" content="Wesley Minner and Lui Liu">
 	<style>.error {color: Red;}</style>
 </head>	
 
 <body>
-	<h2>Add New Actor/Director:<br></h2>
+	<h2>Add New Movie:<br></h2>
 	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method = "GET">
 		<table cellspacing="10">
 			<tr>
-				<td>Identity<span style="color:red">*</span>:</td>
+				<td>Title<span style="color:red">*</span>:</td>
 				<td>
-					<input type="radio" name="identity" value="actor" checked="true">Actor
-					<input type="radio" name="identity" value="director">Director
+					<input type="text" name="title" size="20" maxlength="20" required>
 				</td>
 			</tr>
 			<tr>
-				<td>First Name<span style="color:red">*</span>:</td>
+				<td>Company<span style="color:red">*</span>:</td>
 				<td>
-					<input type="text" name="firstName" size="20" maxlength="20" required>
+					<input type="text" name="company" size="20" maxlength="20" required>
 				</td>
 			</tr>
 			<tr>
-				<td>Last Name<span style="color:red">*</span>:</td>
+				<td>Year<span style="color:red">*</span>:</td>
 				<td>
-					<input type="text" name="lastName" size="20" maxlength="20" required>
+					<input type="text" name="year" size="20" maxlength="20" required>
 				</td>
 			</tr>
 			<tr>
-				<td>Gender<span style="color:red">*</span>:</td>
+				<td>MPAA Rating<span style="color:red">*</span>:</td>
 				<td>
-					<input type="radio" name="gender" value="Male" checked="true">Male
-					<input type="radio" name="gender" value="Female">Female
-				</td>
-			</tr>
-			<tr>
-				<td>Date of Birth<span style="color:red">*</span></td>
-				<td>
-					<input type="text" name="dob" size="20" maxlength="20" required>
-					(YYYY-MM-DD)
-				</td>
-			</tr>
-			<tr>
-				<td>Date of Death</td>
-				<td>
-					<input type="text" name="dod" size="20" maxlength="20">
-					(YYYY-MM-DD)
+					<select>
+						<option value="g">G</option>
+						<option value="pg">PG</option>
+						<option value="pg13">PG-13</option>
+						<option value="r">R</option>
+						<option value="nc17">NC-17</option>
+					</select>
 				</td>
 			</tr>
 		</table>
@@ -80,8 +70,8 @@
 			}
 			// echo "Database connection established";
 
-			// Lookup MaxPersonID
-			$query_str = "SELECT id FROM MaxPersonID";
+			// Lookup MaxMovieID
+			$query_str = "SELECT id FROM MaxMovieID";
 			$result = mysql_query($query_str, $db_connection);
 			$id = 0;
 			if (mysql_num_rows($result) > 0){
@@ -89,13 +79,13 @@
 				$id = $row[0]+1;
 				mysql_free_result($result);
 			}
-			// echo "MaxPersonID = $id";
+			// echo "MaxMovieID = $id";
 
 			// Parse input data variables
-			$firstname = "\"" . mysql_real_escape_string($_GET["firstName"]) . "\"";
-			$lastname = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
-			$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
-			$dob = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
+			$title = "\"" . mysql_real_escape_string($_GET["title"]) . "\"";
+			$company = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
+			$year = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
+			$rating = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
 			$dod = "";
 			if(!empty($_GET["dod"])){
 				$dod = "\"" . mysql_real_escape_string($_GET["dod"]) . "\"";
@@ -119,8 +109,8 @@
 				exit(1);
 			}
 
-			// Increment MaxPersonID
-			$update_id_str = "UPDATE MaxPersonID SET id = id + 1;";
+			// Increment MaxMovieID
+			$update_id_str = "UPDATE MaxMovieID SET id = id + 1;";
 			if(!mysql_query($update_id_str, $db_connection)){
 				echo "ERROR: " . mysql_error($db_connection);
 				exit(1);
