@@ -3,13 +3,15 @@
 # the distribution reliably
 
 UID = 503392352
-# DB = TEST
-DB = CS143
+DB = TEST
+# DB = CS143
 
-DIST_SOURCES = readme.txt team.txt create.sql load.sql queries.sql \
-	query.php violate.sql
+1A_DIST_SOURCES = readme.txt team.txt sql/create.sql sql/load.sql sql/queries.sql \
+	sql/query.php sql/violate.sql
 
-# Copy and rename index.php from ~/www/ to ~/Project1/ git committing
+1B_DIST_SOURCES = readme.txt team.txt sql www testcase
+
+# Copy and rename index.php from ~/www/ to ~/Project1/ for git committing
 phpcommit:
 	cp ~/www/index.php ~/Project1/query.php
 
@@ -17,25 +19,44 @@ phpcommit:
 phptest:
 	cp ~/Project1/query.php ~/www/index.php
 
-create: create.sql
-	mysql $(DB) < create.sql
+# Copy website files to git repo for commiting
+webcommit:
+	cp ~/www/* ~/Project1/www/
 
-load: load.sql
-	mysql $(DB) < load.sql
+# Copy website files from git repo to ~/www/ for testing
+webtest:
+	cp ~/Project1/www/* ~/www/
 
-dist: P1A.zip
+create: sql/create.sql
+	mysql $(DB) < sql/create.sql
 
-P1A.zip: $(DIST_SOURCES)
+load: sql/load.sql
+	mysql $(DB) < sql/load.sql
+
+dist1a: P1A.zip
+
+P1A.zip: $(1A_DIST_SOURCES)
 	rm -rf $(UID)
 	mkdir $(UID)
-	cp $(DIST_SOURCES) $(UID)
+	cp $(1A_DIST_SOURCES) $(UID)
 	zip -r $@  $(UID)
 	./p1a_test $(UID)
 
+dist1b: P1B.zip
+
+P1B.zip: $(1B_DIST_SOURCES)
+	rm -rf $(UID)
+	mkdir $(UID)
+	cp -r $(1B_DIST_SOURCES) $(UID)
+	# Remove 1A files from sql directory
+	rm $(UID)/sql/clean.sql $(UID)/sql/queries.sql $(UID)/sql/violate.sql
+	zip -r $@ $(UID)
+	./p1b_test $(UID)
+
 sqlrefresh: sqlclean create load
 
-sqlclean: clean.sql
-	mysql $(DB) < clean.sql
+sqlclean: sql/clean.sql
+	mysql $(DB) < sql/clean.sql
 
 clean:
 	rm -rf $(UID) *.tmp *.zip *~ *\#
