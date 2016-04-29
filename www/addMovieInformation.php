@@ -75,6 +75,8 @@
 	<hr>
 
 	<?php
+		$valid_ratings = array("G", "PG", "PG-13", "R", "NC-17");
+
 		if(isset($_GET['submit'])){
 			//$desired_db = "CS143";
 			$desired_db = "TEST";
@@ -128,9 +130,8 @@
 			else
 				$genre = "NULL";
 
-			// TODO verify valid mpaa rating
 			$rating = "";
-			if (!empty($_GET["rating"]))
+			if (!empty($_GET["rating"]) && in_array($_GET["rating"], $valid_ratings))
 				$rating = "\"" . mysql_real_escape_string($_GET["rating"]) . "\"";
 			else
 				$rating = "NULL";
@@ -194,7 +195,6 @@
 			// Close database connection 
 			mysql_close($db_connection);
 		}
-		
 	?>
 </body>
 </html>

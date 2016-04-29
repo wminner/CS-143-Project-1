@@ -60,6 +60,8 @@
 	<hr>
 
 	<?php
+		$valid_genders = array("Male", "Female", "Unspecified");
+
 		if(isset($_GET['submit'])){
 			//$desired_db = "CS143";
 			$desired_db = "TEST";
@@ -96,7 +98,7 @@
 			$firstname = "\"" . mysql_real_escape_string($_GET["firstName"]) . "\"";
 			$lastname = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
 			// TODO validate gender
-			if ($_GET["gender"] == "Unspecified")
+			if ($_GET["gender"] == "Unspecified" || !in_array($_GET["gender"], $valid_genders))
 				$gender = "NULL";
 			else
 				$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
