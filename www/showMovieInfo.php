@@ -44,6 +44,7 @@ $movie_query = "SELECT * FROM Movie WHERE id = $mid";
 $direct_query = "SELECT first, last, dob FROM Director, MovieDirector WHERE mid = $mid AND id = did";
 $genre_query = "SELECT * FROM MovieGenre WHERE mid = $mid";
 $actor_query = "SELECT id, first, last, role FROM Actor, MovieActor WHERE mid = $mid AND id = aid";
+$rating_query = "SELECT * FROM MovieRating WHERE mid = $mid";
 $review_query = "SELECT * FROM Review WHERE mid = $mid ORDER BY time DESC";
 $avgreview_query = "SELECT AVG(rating) FROM Review WHERE mid = $mid";
 
@@ -51,6 +52,7 @@ $movie_rs = mysql_query($movie_query, $db_connection);
 $direct_rs = mysql_query($direct_query, $db_connection);
 $genre_rs = mysql_query($genre_query, $db_connection);
 $actor_rs = mysql_query($actor_query, $db_connection);
+$rating_rs = mysql_query($rating_query, $db_connection);
 $review_rs = mysql_query($review_query, $db_connection);
 $avgreview_rs = mysql_query($avgreview_query, $db_connection);
 
@@ -63,47 +65,83 @@ if (!empty($movie_row)) {
     if ($movie_row[2])
         echo "($movie_row[2])";
     echo "</td></tr>";
-    echo "<tr><td>Producer: </td><td>$movie_row[4]</td></tr>";
-    echo "<tr><td>MPAA Rating: </td><td>$movie_row[3]</td></tr>";
+    if ($movie_row[4])
+        echo "<tr><td>Producer: </td><td>$movie_row[4]</td></tr>";
+    else
+        echo "<tr><td>Producer: </td><td>N/A</td></tr>";
+    if ($movie_row[3])
+        echo "<tr><td>MPAA Rating: </td><td>$movie_row[3]</td></tr>";
+    else
+        echo "<tr><td>MPAA Rating: </td><td>N/A</td></tr>";
     
     // List all genres
     echo "<tr><td>Genre(s): </td>";
     $num_rows = mysql_num_rows($genre_rs);
     $count = 0;
-    while ($genre_row = mysql_fetch_row($genre_rs)) {
-        $count += 1;
-        if ($count < $num_rows)
-            echo "<td>$genre_row[1]</td></tr><tr><td></td>";
-        else
-            echo "<td>$genre_row[1]</td></tr><tr><tr><td></td><td></td></tr>";
-    }
+    if ($num_rows >= 1) {
+        while ($genre_row = mysql_fetch_row($genre_rs)) {
+            $count += 1;
+            if ($count < $num_rows)
+                echo "<td>$genre_row[1]</td></tr><tr><td></td>";
+            else
+                echo "<td>$genre_row[1]</td></tr><tr><tr><td></td><td></td></tr>";
+        }
+    } else
+        echo "<td>N/A</td></tr>";
 
     // List all directors
     echo "<tr><td>Director(s): </td>";
     $num_rows = mysql_num_rows($direct_rs);
     $count = 0;
-    while ($direct_row = mysql_fetch_row($direct_rs)) {
-        $count += 1;
-        if ($count < $num_rows)
-            echo "<td>$direct_row[0] $direct_row[1] ($direct_row[2])</td></tr><tr><td></td>";
-        else
-            echo "<td>$direct_row[0] $direct_row[1] ($direct_row[2])</td></tr><tr><td></td><td></td></tr>";
-    }
+    if ($num_rows >= 1) {
+        while ($direct_row = mysql_fetch_row($direct_rs)) {
+            $count += 1;
+            if ($count < $num_rows)
+                echo "<td>$direct_row[0] $direct_row[1] ($direct_row[2])</td></tr><tr><td></td>";
+            else
+                echo "<td>$direct_row[0] $direct_row[1] ($direct_row[2])</td></tr><tr><td></td><td></td></tr>";
+        }
+    } else
+        echo "<td>N/A</td></tr>";
 
     // List all actors
     echo "<tr><td>Actor(s): </td>";
     $num_rows = mysql_num_rows($actor_rs);
     $count = 0;
-    while ($actor_row = mysql_fetch_row($actor_rs)) {
-        $count += 1;
-        if ($count < $num_rows)
-            echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr><tr><td></td>";
-        else
-            echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr>";
-    }
+    if ($num_rows >= 1) {
+        while ($actor_row = mysql_fetch_row($actor_rs)) {
+            $count += 1;
+            if ($count < $num_rows)
+                echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr><tr><td></td>";
+            else
+                echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr>";
+        }
+    } else
+        echo "<td>N/A</td></tr>";
+
+    // End main table
+    echo "</table><br />";
+    
+    // List imdb and rot ratings
+    echo "<h3>Critic Reviews</h3>";
+    echo "<table border=0 cellspacing=2 cellpadding=2>";
+    echo "<tr><td>IMDB: </td>";
+    $num_rows = mysql_num_rows($rating_rs);
+    $rating_row = mysql_fetch_row($rating_rs);
+    if ($num_rows == 1) {
+        $imdb_score = $rating_row[1]/10.0;
+        echo "<td>$imdb_score/10.0</td></tr>";
+    } else
+        echo "<td>N/A</td></tr>";
+    echo "<tr><td>Rotten Tomatoes: </td>";
+    if ($num_rows == 1) {
+        $rot_score = $rating_row[2]/10.0;
+        echo "<td>$rot_score/10.0</td></tr>";
+    } else
+        echo "<td>N/A</td></tr>";
     echo "</table><br />";
 
-    // List all reviews
+    // List all user reviews
     echo "<h3>User Reviews:</h3>";
     $avg_review = round(floatval(mysql_fetch_row($avgreview_rs)[0]), 2);
     echo "Average Score: $avg_review/5.00<br />";
