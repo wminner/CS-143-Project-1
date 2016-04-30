@@ -43,15 +43,19 @@
 			<tr>
 				<td>Date of Birth<span style="color:red">*</span></td>
 				<td>
-					<input type="text" name="dob" size="20" maxlength="20" required>
-					(YYYY-MM-DD)
+					<input type="text" name="dobYear" size="5" maxlength="4" required> -
+					<input type="text" name="dobMonth" size="3" maxlength="2" required> -
+					<input type="text" name="dobDay" size="3" maxlength="2" required>
+					<span><i>(YYYY-MM-DD)</i></span>
 				</td>
 			</tr>
 			<tr>
 				<td>Date of Death</td>
 				<td>
-					<input type="text" name="dod" size="20" maxlength="20">
-					(YYYY-MM-DD)
+					<input type="text" name="dodYear" size="5" maxlength="4"> -
+					<input type="text" name="dodMonth" size="3" maxlength="2"> -
+					<input type="text" name="dodDay" size="3" maxlength="2">
+					<span><i>(YYYY-MM-DD)</i></span>
 				</td>
 			</tr>
 		</table>
@@ -71,7 +75,7 @@
 			$db_connection = mysql_connect("localhost", "cs143", "");
 			if (!$db_connection) {
 			    $errormsg = mysql_error($db_connection);
-			    echo "Error connecting to MySQL: " . $errormsg . "<br />";
+			    echo "ERROR: Error connecting to MySQL: " . $errormsg . "<br />";
 			    exit(1);
 			}
 
@@ -79,7 +83,7 @@
 			$db_selected = mysql_select_db($desired_db, $db_connection);
 			if (!$db_selected) {
 			    $errormsg = mysql_error();
-			    echo "Failed to select database " . $desired_db . ": " . $errormsg . "<br />";
+			    echo "ERROR: Failed to select database " . $desired_db . ": " . $errormsg . "<br />";
 			    exit(1);
 			}
 
@@ -98,16 +102,46 @@
 			$lastname = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
 
 			// Check for valid gender
-			if ($_GET["gender"] == "Unspecified" || !in_array($_GET["gender"], $valid_genders))
+			if ($_GET["gender"] == "Unspecified" || !in_array($_GET["gender"], $valid_genders)){
 				$gender = "NULL";
-			else
-				$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
-			$dob = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
-			$dod = "";
-			if(!empty($_GET["dod"])){
-				$dod = "\"" . mysql_real_escape_string($_GET["dod"]) . "\"";
 			}else{
+				$gender = "\"" . mysql_real_escape_string($_GET["gender"]) . "\"";
+			}
+
+			// Check for valid dob date
+			// $dob = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
+			$dob = "";
+			if(checkdate($_GET["dobMonth"],$_GET["dobDay"], $_GET["dobYear"])){
+				$dobDay = str_pad($_GET["dobDay"], 2, "0", STR_PAD_LEFT);
+				$dobMonth = str_pad($_GET["dobMonth"], 2, "0", STR_PAD_LEFT);
+				$dob = "\"" . $_GET["dobYear"]."-".$dobMonth."-".$dobDay . "\""	;
+
+				echo "dob = " . $dob;
+			}else{
+				echo "ERROR: Please enter date of birth in the YYYY-MM-DD format";
+				exit(1);
+			}
+
+			// Check for valid dob date
+			// $dob = "\"" . mysql_real_escape_string($_GET["dob"]) . "\"";
+			$dod = "";
+			if(empty($_GET["dodYear"])&&empty($_GET["dodMonth"])&&empty($_GET["dodDay"])){
 				$dod = "NULL";
+			}else{
+				if(checkdate($_GET["dodMonth"],$_GET["dodDay"], $_GET["dodYear"])){
+					$dodDay = str_pad($_GET["dodDay"], 2, "0", STR_PAD_LEFT);
+					$dodMonth = str_pad($_GET["dodMonth"], 2, "0", STR_PAD_LEFT);
+					$dod = "\"" . $_GET["dodYear"]."-".$dodMonth."-".$dodDay. "\"" ;
+					echo "dod = " . $dod;
+
+					if($dod < $dob){
+						echo "ERROR: date of birth should precede date of death";
+						exit(1);
+					}
+				}else{
+					echo "ERROR: Please enter date of death in the YYYY-MM-DD format";
+					exit(1);
+				}
 			}
 
 			// Construct the INSERT statement
