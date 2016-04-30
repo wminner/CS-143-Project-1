@@ -116,7 +116,7 @@
 				$dobMonth = str_pad($_GET["dobMonth"], 2, "0", STR_PAD_LEFT);
 				$dob = "\"" . $_GET["dobYear"]."-".$dobMonth."-".$dobDay . "\""	;
 
-				echo "dob = " . $dob;
+				// echo "dob = " . $dob;
 			}else{
 				echo "ERROR: Please enter date of birth in the YYYY-MM-DD format";
 				exit(1);
@@ -132,7 +132,7 @@
 					$dodDay = str_pad($_GET["dodDay"], 2, "0", STR_PAD_LEFT);
 					$dodMonth = str_pad($_GET["dodMonth"], 2, "0", STR_PAD_LEFT);
 					$dod = "\"" . $_GET["dodYear"]."-".$dodMonth."-".$dodDay. "\"" ;
-					echo "dod = " . $dod;
+					// echo "dod = " . $dod;
 
 					if($dod < $dob){
 						echo "ERROR: date of birth should precede date of death";
