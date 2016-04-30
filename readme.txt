@@ -25,23 +25,26 @@ If 'make sqlrefesh' is giving errors try:
 3. make load
 
 
-DONE:
+1A DONE:
 * create.sql
 * load.sql
 * queries.sql
 * query.php
 * violate.sql
 
-TODO:
+1B DONE:
 * AddActorDirector.php
 * AddMovieInformation.php
 * AddMovieActorRelation.php
 * AddMovieDirectorRelation.php
+* AddMovieReview.php
 * showActorInfo.php
 * showMovieInfo.php
 * searchActorMovie.php
+* index.html
+* directory.html
 
+1B TODO:
 * Change $desired_db from TEST to CS143
-* Show imdb and rot on showMovieInfo page
-* Accept multiple genres on addMovie page
 * Fix showActor page so it doesn't show empty table if you clicked on directory listing
+* Create test cases

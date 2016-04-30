@@ -32,8 +32,8 @@
 				<td><input type="text" name="year" size="20" maxlength="4"></td>
 			</tr>
 			<tr>
-				<td>Genre:</td>
-				<td><input type="text" name="genre" list="genre" size="20" />
+				<td>Genre: <br /> (separate by spaces)</td>
+				<td><input type="text" name="genre" list="genre" size="20"/>
 					<datalist id="genre">
 						<option>Action</option>
 						<option>Adult</option>
@@ -76,6 +76,7 @@
 
 	<?php
 		$valid_ratings = array("G", "PG", "PG-13", "R", "NC-17");
+		$num_insert = 0;
 
 		if(isset($_GET['submit'])){
 			//$desired_db = "CS143";
@@ -96,7 +97,6 @@
 			    echo "Failed to select database " . $desired_db . ": " . $errormsg . "<br />";
 			    exit(1);
 			}
-			// echo "Database connection established";
 
 			// Lookup MaxMovieID
 			$query_str = "SELECT id FROM MaxMovieID";
@@ -107,7 +107,6 @@
 				$id = $row[0]+1;
 				mysql_free_result($result);
 			}
-			// echo "MaxMovieID = $id";
 
 			// Parse input data variables
 			$title = "\"" . mysql_real_escape_string($_GET["title"]) . "\"";
@@ -124,11 +123,14 @@
 			else
 				$year = "NULL";
 
-			$genre = "";
-			if (!empty($_GET["genre"]))
-				$genre = "\"" . mysql_real_escape_string($_GET["genre"]) . "\"";
+			$genre_str = "";
+			if (!empty($_GET["genre"])) {
+				$genre_str = "\"" . mysql_real_escape_string($_GET["genre"]) . "\"";
+				$genre_str = str_replace("\"", "", $genre_str);
+				$genre_array = explode(' ', $genre_str);
+			}
 			else
-				$genre = "NULL";
+				$genre_str = "NULL";
 
 			$rating = "";
 			if (!empty($_GET["rating"]) && in_array($_GET["rating"], $valid_ratings))
@@ -148,33 +150,50 @@
 			else
 				$rot = "NULL";
 
-			// Construct the INSERT statement(s)
+			// Construct INSERT statements
+			// Construct movie insert
 			$insert_movie_str = "INSERT INTO Movie VALUES($id, $title, $year, $rating, $company)";
-			if ($genre != "NULL")
-				$insert_genre_str = "INSERT INTO MovieGenre VALUES($id, $genre)";
-			else
-				$insert_genre_str = "NULL";
+			// Construct genre insert
+			$insert_genre_array = array();
+			if ($genre_str != "NULL") {
+				foreach ($genre_array as $genre)
+					array_push($insert_genre_array, "INSERT INTO MovieGenre VALUES($id, \"$genre\")");
+			} else
+				$insert_genre_array = "NULL";
+			// Construct rating insert
 			if ($imdb != "NULL" || $rot != "NULL")
 				$insert_rating_str = "INSERT INTO MovieRating VALUES($id, $imdb, $rot)";
 			else
 				$insert_rating_str = "NULL";
 
-			// Execute the INSERT statement
+			// Execute the INSERT statements
+			// Insert into Movie
 			$affected = 0;
 			if(!mysql_query($insert_movie_str, $db_connection)){
 				echo "ERROR: " . mysql_error($db_connection);
 				exit(1);
 			}
+			$num_insert += 1;
 			$affected += mysql_affected_rows($db_connection);
-			if ($insert_genre_str != "NULL" && !mysql_query($insert_genre_str, $db_connection)) {
-				echo "ERROR: " . mysql_error($db_connection);
-				exit(1);
+			
+			// Insert genres into MovieGenre
+			if ($insert_genre_array != "NULL") {
+				foreach ($insert_genre_array as $insert_genre_str) {
+					if (!mysql_query($insert_genre_str, $db_connection)) {
+						echo "ERROR: " . mysql_error($db_connection);
+						exit(1);
+					}
+					$num_insert += 1;
+					$affected += mysql_affected_rows($db_connection);
+				}
 			}
-			$affected += mysql_affected_rows($db_connection);
+
+			// Insert rating into MovieRating
 			if ($insert_rating_str != "NULL" && !mysql_query($insert_rating_str, $db_connection)) {
 				echo "ERROR: " . mysql_error($db_connection);
 				exit(1);
 			}
+			$num_insert += 1;
 			$affected += mysql_affected_rows($db_connection);
 
 			// Increment MaxMovieID
@@ -183,9 +202,11 @@
 				echo "ERROR: " . mysql_error($db_connection);
 				exit(1);
 			}
+			$num_insert += 1;
+			$affected += mysql_affected_rows($db_connection);
 
 			// Print success and a link to the new movie's page
-			if ($affected >= 1)
+			if ($affected == $num_insert)
 				echo "SUCCESS: <a href=\"showMovieInfo.php?mid=$id\">view movie's page</a><br />";
 
 			// Close database connection 
