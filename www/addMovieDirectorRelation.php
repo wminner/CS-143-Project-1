@@ -106,7 +106,6 @@
 			$movie = $_GET['movie'];
 			$director = $_GET['director'];
 			$insert_str = "INSERT INTO MovieDirector VALUES(\"$movie\", \"$director\")";
-			echo "Query: " . $insert_str . "<br /><br />";
 			
 			// Execute the INSERT statement
 			if(!mysql_query($insert_str, $db_connection)){
@@ -114,8 +113,10 @@
 				exit(1);
 			}
 
+			// Print success and a link to the updated movie's page
 			$affected = mysql_affected_rows($db_connection);
-			echo "SUCCESS: Total affected rows: $affected<br /><br />";
+			if ($affected == 1)
+				echo "SUCCESS: <a href=\"showMovieInfo.php?mid=$movie\">view movie's page</a><br />";
 
 			// Close database connection 
 			databaseClose($db_connection);

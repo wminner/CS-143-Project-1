@@ -132,12 +132,15 @@
 					echo "ERROR: " . mysql_error($db_connection);
 					exit(1);
 				}
-			}
 
-			// Check for succcess, then provide link to actor's new page
-			$affected = mysql_affected_rows($db_connection);
-			if ($affected == 1)
-				echo "SUCCESS: <a href=\"showActorInfo.php?aid=$id\">view actor's page</a><br />";
+				// Check for succcess, then provide link to new page (if actor)
+				$affected = mysql_affected_rows($db_connection);
+				if ($affected == 1)
+					if ($_GET['identity'] == "actor")
+						echo "SUCCESS: <a href=\"showActorInfo.php?aid=$id\">view actor's page</a><br />";
+					else
+						echo "SUCCESS!<br />";
+			}
 
 			// Close database connection 
 			mysql_close($db_connection);

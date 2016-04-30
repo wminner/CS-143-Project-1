@@ -42,5 +42,6 @@ TODO:
 * searchActorMovie.php
 
 * Change $desired_db from TEST to CS143
-* Remove all prints of raw sql queries
+* Show imdb and rot on showMovieInfo page
+* Accept multiple genres on addMovie page
 * Fix showActor page so it doesn't show empty table if you clicked on directory listing

@@ -58,7 +58,11 @@ $avgreview_rs = mysql_query($avgreview_query, $db_connection);
 $movie_row = mysql_fetch_row($movie_rs);
 if (!empty($movie_row)) {
     echo "<table border=0 cellspacing=2 cellpadding=2>";
-    echo "<tr><td>Title: </td><td>$movie_row[1] ($movie_row[2])</td></tr>";
+    echo "<tr><td>Title: </td><td>$movie_row[1] ";
+    // Output year if there is one
+    if ($movie_row[2])
+        echo "($movie_row[2])";
+    echo "</td></tr>";
     echo "<tr><td>Producer: </td><td>$movie_row[4]</td></tr>";
     echo "<tr><td>MPAA Rating: </td><td>$movie_row[3]</td></tr>";
     
