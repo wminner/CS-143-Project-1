@@ -48,12 +48,21 @@
 							// Establish database connection
 							$db_connection = databaseConnect();
 
+							// Auto-select movie if an mid is submitted
+							if (isset($_GET['mid'])) {
+								$mid = $_GET['mid'];
+								$mid = intval(mysql_real_escape_string($mid, $db_connection));
+							}
+
 							// Populate Movie Dropdown menu
 							$query_str = "SELECT id, title, year FROM Movie";
 							$result = mysql_query($query_str, $db_connection);
 							if (mysql_num_rows($result) > 0){
 								while ($row = mysql_fetch_row($result)) {
-						            echo "<option value=\"$row[0]\">";
+						            if ($row[0] == $mid)
+						            	echo "<option selected value=\"$row[0]\">";
+						            else
+						            	echo "<option value=\"$row[0]\">";
 						            echo "$row[1] ($row[2])";
 						            echo "</option>";
 						        }
@@ -69,7 +78,7 @@
 			<tr>
 				<td>Name<span style="color:red">*</span>:</td>
 				<td>
-					<input type="text" name="name" size="20" maxlength="20" required/>
+					<input type="text" name="name" size="20" maxlength="20" value="Anonymous" required/>
 				</td>
 			</tr>
 			<tr>
@@ -78,7 +87,7 @@
 					<select name="rating" required>
 						<option value="1">Very Poor (Rating 1)</option>
 						<option value="2">Poor (Rating 2)</option>
-						<option value="3">Fair (Rating 3)</option>
+						<option selected value="3">Fair (Rating 3)</option>
 						<option value="4">Good (Rating 4)</option>
 						<option value="5">Very Good (Rating 5)</option>
 					</select>
@@ -87,11 +96,14 @@
 			<tr>
 				<td>Comments<span style="color:red">*</span><br>(500 Characters):</td>
 				<td>
-					<textarea name="comment" row="100" col="200" required></textarea>
+					<textarea name="comment" rows="15" cols="63" maxlength="500" required></textarea>
 				</td>
 			</tr>
+			<tr>
+				<td></td>
+				<td align="right"><input type="submit" name="submit" style="width:100px" value="Add"/></td>
+			</tr>
 		</table>
-		<input type="submit" name="submit" value="Add"/>
 	</form>
 	<hr>
 
@@ -121,6 +133,9 @@
 
 			$affected = mysql_affected_rows($db_connection);
 			echo "SUCCESS: Total affected rows: $affected<br /><br />";
+
+			// Supply link so user can go back to movie page
+			echo "<a href=\"showMovieInfo.php?mid=$movie\">View movie's page</a><br /><br />";
 
 			// Close database connection 
 			databaseClose($db_connection);

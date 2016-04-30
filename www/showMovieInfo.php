@@ -42,11 +42,15 @@ $movie_query = "SELECT * FROM Movie WHERE id = $mid";
 $direct_query = "SELECT first, last, dob FROM Director, MovieDirector WHERE mid = $mid AND id = did";
 $genre_query = "SELECT * FROM MovieGenre WHERE mid = $mid";
 $actor_query = "SELECT id, first, last, role FROM Actor, MovieActor WHERE mid = $mid AND id = aid";
+$review_query = "SELECT * FROM Review WHERE mid = $mid ORDER BY time DESC";
+$avgreview_query = "SELECT AVG(rating) FROM Review WHERE mid = $mid";
 
 $movie_rs = mysql_query($movie_query, $db_connection);
 $direct_rs = mysql_query($direct_query, $db_connection);
 $genre_rs = mysql_query($genre_query, $db_connection);
 $actor_rs = mysql_query($actor_query, $db_connection);
+$review_rs = mysql_query($review_query, $db_connection);
+$avgreview_rs = mysql_query($avgreview_query, $db_connection);
 
 // Display result
 $movie_row = mysql_fetch_row($movie_rs);
@@ -89,14 +93,24 @@ if (!empty($movie_row)) {
         if ($count < $num_rows)
             echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr><tr><td></td>";
         else
-            echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr><tr><td></td><td></td></tr>";
+            echo "<td><a href=\"showActorInfo.php?aid=$actor_row[0]\">$actor_row[1] $actor_row[2]</a> as \"$actor_row[3]\"</td></tr>";
     }
     echo "</table><br />";
 
     // List all reviews
-    echo "<h3>User Reviews:</h3><br />";
-    echo "<table border=1 cellspacing=2 cellpadding=2>";
-    // TODO
+    echo "<h3>User Reviews:</h3>";
+    $avg_review = round(floatval(mysql_fetch_row($avgreview_rs)[0]), 2);
+    echo "Average Score: $avg_review/5.00<br />";
+    echo "<a href=\"addMovieReview.php?mid=$mid\">Submit a review</a><br /><br />";
+    echo "<table border=0 cellspacing=3 cellpadding=3>";
+    $num_rows = mysql_num_rows($review_rs);
+    if ($num_rows > 0) {
+        while ($review_row = mysql_fetch_row($review_rs)) {
+            echo "<tr><td><b>$review_row[0]</b></td><td>Score: $review_row[3]/5 &nbsp&nbsp ($review_row[1])</td></tr>";
+            echo "<tr><td></td><td>$review_row[4]</td></tr>";
+        }
+    }
+
     echo "</table><br />";   
 }
 
@@ -105,7 +119,11 @@ mysql_free_result($movie_rs);
 mysql_free_result($movdir_rs);
 mysql_free_result($genre_rs);
 mysql_free_result($actor_rs);
-mysql_free_result($direct_rs);
+mysql_free_result($review_rs);
+mysql_free_result($avgreview_rs);
+
+// Close database connection
+mysql_close($db_connection);
 
 ?>
 </body>

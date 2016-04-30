@@ -139,7 +139,6 @@
 			// Close database connection 
 			mysql_close($db_connection);
 		}
-		
 	?>
 </body>
 </html>
