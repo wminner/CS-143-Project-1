@@ -34,8 +34,10 @@ if (!$db_selected) {
 }
 
 // Grab mid if we were redirected here
-if ($mid = $_GET['mid'])
-    mysql_real_escape_string($mid, $db_connection);
+if ($_GET['mid'])
+    $mid = mysql_real_escape_string($_GET['mid'], $db_connection);
+else
+    echo "No movie selected. Try searching below.<br />";
 
 // Form queries and get results
 $movie_query = "SELECT * FROM Movie WHERE id = $mid";
@@ -126,6 +128,70 @@ mysql_free_result($avgreview_rs);
 mysql_close($db_connection);
 
 ?>
+
+<!-- Search again -->
+<br />
+<hr />
+<h3>Search again:</h3>
+<form action="<?php $_PHP_SELF ?>" method="GET">
+<table cellspacing="10">
+    <tr>
+        <td><input type="text" name="query" size="40" maxlength="40" required value="<?php echo htmlspecialchars($_GET['query']); ?>" /></td>
+        <td><input type="submit" value="Search"/></td>
+    </tr>
+    <tr>
+        <td>
+        <input type="checkbox" name="actor" value="checked" checked />Actor
+        <input type="checkbox" name="movie" value="checked" checked />Movie
+        </td>
+    </tr>
+</table>
+</form>
+
+<?php
+// Go to search page, if user supplied a search query
+if ($_GET['query']) {
+    #$desired_db = "CS143";
+    $desired_db = "TEST";
+    $actor = $movie = True;
+
+    // Connect to mysql and check for errors
+    $db_connection = mysql_connect("localhost", "cs143", "");
+    if (!$db_connection) {
+        $errormsg = mysql_error($db_connection);
+        echo "Error connecting to MySQL: " . $errormsg . "<br />";
+        exit(1);
+    }
+
+    // Switch to desired database
+    $db_selected = mysql_select_db($desired_db, $db_connection);
+    if (!$db_selected) {
+        $errormsg = mysql_error();
+        echo "Failed to select database " . $desired_db . ": " . $errormsg . "<br />";
+        exit(1);
+    }
+
+    // Get checkbox values and search values
+    if (!isset($_GET['actor']))
+        $actor = False;
+    if (!isset($_GET['movie']))
+        $movie = False;
+    $search = mysql_real_escape_string($_GET['query']);
+
+    // Form url and go there
+    $url = "searchActorMovie.php?query=$search";
+    if ($actor)
+        $url .= "&actor=$actor";
+    if ($movie)
+        $url .= "&movie=$movie";
+    header("Location: $url");
+
+    // Close database connection
+    mysql_close($db_connection);
+}
+
+?>
+
 </body>
 
 </html>

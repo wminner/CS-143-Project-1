@@ -61,6 +61,7 @@
 
 	<?php
 		$valid_genders = array("Male", "Female", "Unspecified");
+		$valid_identity = array("actor", "director");
 
 		if(isset($_GET['submit'])){
 			//$desired_db = "CS143";
@@ -97,7 +98,8 @@
 			// Parse input data variables
 			$firstname = "\"" . mysql_real_escape_string($_GET["firstName"]) . "\"";
 			$lastname = "\"" . mysql_real_escape_string($_GET["lastName"]) . "\"";
-			// TODO validate gender
+
+			// Check for valid gender
 			if ($_GET["gender"] == "Unspecified" || !in_array($_GET["gender"], $valid_genders))
 				$gender = "NULL";
 			else
@@ -112,25 +114,28 @@
 			// echo "Parsing completed: firstName = $firstname, lastname = $lastname, gender = $gender, dob = $dob, dod = $dod";
 
 			// Construct the INSERT statement
-			$insert_str = "";
-			if($_GET["identity"]=="actor"){
-				$insert_str = "INSERT INTO Actor VALUES($id, $lastname, $firstname, $gender, $dob, $dod)";
-			}else{
-				$insert_str = "INSERT INTO Director VALUES($id, $lastname, $firstname, $dob, $dod)";
-			}
-			echo "Query: " . $insert_str . "<br /><br />";
-			
-			// Execute the INSERT statement
-			if(!mysql_query($insert_str, $db_connection)){
-				echo "ERROR: " . mysql_error($db_connection);
-				exit(1);
-			}
+			// Check if identity is either actor or director
+			if (in_array($_GET["identity"], $valid_identity)) {
+				$insert_str = "";
+				if($_GET["identity"]=="actor"){
+					$insert_str = "INSERT INTO Actor VALUES($id, $lastname, $firstname, $gender, $dob, $dod)";
+				}else{
+					$insert_str = "INSERT INTO Director VALUES($id, $lastname, $firstname, $dob, $dod)";
+				}
+				echo "Query: " . $insert_str . "<br /><br />";
+				
+				// Execute the INSERT statement
+				if(!mysql_query($insert_str, $db_connection)){
+					echo "ERROR: " . mysql_error($db_connection);
+					exit(1);
+				}
 
-			// Increment MaxPersonID
-			$update_id_str = "UPDATE MaxPersonID SET id = id + 1;";
-			if(!mysql_query($update_id_str, $db_connection)){
-				echo "ERROR: " . mysql_error($db_connection);
-				exit(1);
+				// Increment MaxPersonID
+				$update_id_str = "UPDATE MaxPersonID SET id = id + 1;";
+				if(!mysql_query($update_id_str, $db_connection)){
+					echo "ERROR: " . mysql_error($db_connection);
+					exit(1);
+				}
 			}
 
 			$affected = mysql_affected_rows($db_connection);

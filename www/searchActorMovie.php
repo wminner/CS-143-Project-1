@@ -64,8 +64,8 @@ if (!isset($_GET['movie']))
     $movie = False;
 
 // Create queries based on checkbox filters
-if ($keyword = $_GET["query"]) {
-    mysql_real_escape_string($keyword, $db_connection);
+if ($_GET["query"]) {
+    $keyword = mysql_real_escape_string($_GET["query"], $db_connection);
     if ($actor) 
         $actor_query = "SELECT * FROM Actor WHERE first LIKE '%$keyword%' OR last like '%$keyword%'";
     if ($movie)

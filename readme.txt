@@ -42,3 +42,4 @@ TODO:
 
 * Change $desired_db from TEST to CS143
 * Remove all prints of raw sql queries
+* Search should interpret spaces as AND
