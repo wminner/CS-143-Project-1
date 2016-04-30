@@ -148,9 +148,6 @@
 			else
 				$rot = "NULL";
 
-			// DEBUG
-			//echo "Parsing completed: title = $title, company = $company, year = $year, genre = $genre, rating = $rating, imdb = $imdb, rot = $rot" . "<br /><br />";
-
 			// Construct the INSERT statement(s)
 			$insert_movie_str = "INSERT INTO Movie VALUES($id, $title, $year, $rating, $company)";
 			if ($genre != "NULL")
@@ -161,10 +158,7 @@
 				$insert_rating_str = "INSERT INTO MovieRating VALUES($id, $imdb, $rot)";
 			else
 				$insert_rating_str = "NULL";
-			echo "Movie Query: " . $insert_movie_str . "<br />";
-			echo "MovieGenre Query: " . $insert_genre_str . "<br />";
-			echo "MovieRating Query: " . $insert_rating_str . "<br /><br />";
-			
+
 			// Execute the INSERT statement
 			$affected = 0;
 			if(!mysql_query($insert_movie_str, $db_connection)){
@@ -190,7 +184,9 @@
 				exit(1);
 			}
 
-			echo "SUCCESS: Total affected rows: $affected<br/>";
+			// Print success and a link to the new movie's page
+			if ($affected >= 1)
+				echo "SUCCESS: <a href=\"showMovieInfo.php?mid=$id\">view movie's page</a><br />";
 
 			// Close database connection 
 			mysql_close($db_connection);

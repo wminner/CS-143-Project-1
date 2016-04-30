@@ -65,22 +65,40 @@ if (!isset($_GET['movie']))
 
 // Create queries based on checkbox filters
 if ($_GET["query"]) {
-    $keyword = mysql_real_escape_string($_GET["query"], $db_connection);
-    if ($actor) 
-        $actor_query = "SELECT * FROM Actor WHERE first LIKE '%$keyword%' OR last like '%$keyword%'";
-    if ($movie)
-        $movie_query = "SELECT * FROM Movie WHERE title LIKE '%$keyword%'";
+    $search = mysql_real_escape_string($_GET["query"], $db_connection);
+    // Split search into keywords, delimited by spaces
+    $keyword_array = explode(' ', $search);
+    $num_keywords = count($keyword_array);
+    // Build search queries
+    if ($actor) {
+        $actor_query = "SELECT * FROM Actor WHERE ";
+        $count = 0;
+        foreach ($keyword_array as $keyword) {
+            $count += 1;
+            $actor_query .= "(first LIKE '%$keyword%' OR last LIKE '%$keyword%')";
+            if ($count < $num_keywords)
+                $actor_query .= " AND ";
+        }
+    }
+    if ($movie) {
+        $movie_query = "SELECT * FROM Movie WHERE ";
+        $count = 0;
+        foreach ($keyword_array as $keyword) {
+            $count += 1;
+            $movie_query .= "(title LIKE '%$keyword%')";
+            if ($count < $num_keywords)
+                $movie_query .= " AND ";
+        }
+    }
     echo "<h2>Results:</h2>";
 }
 
 // Process queries and print results
 if ($actor_query) {
-    //echo "$actor_query<br />";
     $actor_result = mysql_query($actor_query, $db_connection);
     displayActorResult($actor_result);
 }
 if ($movie_query) {
-    //echo "$movie_query<br />";
     $movie_result = mysql_query($movie_query, $db_connection);
     displayMovieResult($movie_result);
 }

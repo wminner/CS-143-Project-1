@@ -5,6 +5,7 @@ Professor Carlo Zaniolo
 Spring 2016
 
 Spec: http://yellowstone.cs.ucla.edu/cs143/project/project1A.html
+	  http://yellowstone.cs.ucla.edu/cs143/project/project1B.html
 
 ================================================================================
 Project 1
@@ -25,7 +26,7 @@ If 'make sqlrefesh' is giving errors try:
 
 
 DONE:
-* create.sql (still need constaints from last part of project)
+* create.sql
 * load.sql
 * queries.sql
 * query.php
@@ -42,4 +43,4 @@ TODO:
 
 * Change $desired_db from TEST to CS143
 * Remove all prints of raw sql queries
-* Search should interpret spaces as AND
+* Fix showActor page so it doesn't show empty table if you clicked on directory listing

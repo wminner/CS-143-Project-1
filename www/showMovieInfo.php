@@ -37,7 +37,7 @@ if (!$db_selected) {
 if ($_GET['mid'])
     $mid = mysql_real_escape_string($_GET['mid'], $db_connection);
 else
-    echo "No movie selected. Try searching below.<br />";
+    echo "No movie selected. Try searching below.<br /><br />";
 
 // Form queries and get results
 $movie_query = "SELECT * FROM Movie WHERE id = $mid";
@@ -130,7 +130,6 @@ mysql_close($db_connection);
 ?>
 
 <!-- Search again -->
-<br />
 <hr />
 <h3>Search again:</h3>
 <form action="<?php $_PHP_SELF ?>" method="GET">

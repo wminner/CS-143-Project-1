@@ -82,7 +82,6 @@
 			    echo "Failed to select database " . $desired_db . ": " . $errormsg . "<br />";
 			    exit(1);
 			}
-			// echo "Database connection established";
 
 			// Lookup MaxPersonID
 			$query_str = "SELECT id FROM MaxPersonID";
@@ -93,7 +92,6 @@
 				$id = $row[0]+1;
 				mysql_free_result($result);
 			}
-			// echo "MaxPersonID = $id";
 
 			// Parse input data variables
 			$firstname = "\"" . mysql_real_escape_string($_GET["firstName"]) . "\"";
@@ -111,7 +109,6 @@
 			}else{
 				$dod = "NULL";
 			}
-			// echo "Parsing completed: firstName = $firstname, lastname = $lastname, gender = $gender, dob = $dob, dod = $dod";
 
 			// Construct the INSERT statement
 			// Check if identity is either actor or director
@@ -122,7 +119,6 @@
 				}else{
 					$insert_str = "INSERT INTO Director VALUES($id, $lastname, $firstname, $dob, $dod)";
 				}
-				echo "Query: " . $insert_str . "<br /><br />";
 				
 				// Execute the INSERT statement
 				if(!mysql_query($insert_str, $db_connection)){
@@ -138,8 +134,10 @@
 				}
 			}
 
+			// Check for succcess, then provide link to actor's new page
 			$affected = mysql_affected_rows($db_connection);
-			echo "SUCCESS: Total affected rows: $affected<br /><br />";
+			if ($affected == 1)
+				echo "SUCCESS: <a href=\"showActorInfo.php?aid=$id\">view actor's page</a><br />";
 
 			// Close database connection 
 			mysql_close($db_connection);
