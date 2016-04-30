@@ -70,9 +70,8 @@ if ($keyword = $_GET["query"]) {
         $actor_query = "SELECT * FROM Actor WHERE first LIKE '%$keyword%' OR last like '%$keyword%'";
     if ($movie)
         $movie_query = "SELECT * FROM Movie WHERE title LIKE '%$keyword%'";
+    echo "<h2>Results:</h2>";
 }
-
-echo "<h2>Results:</h2>";
 
 // Process queries and print results
 if ($actor_query) {
