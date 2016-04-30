@@ -14,8 +14,8 @@
 
 <?php
 // Get information of movie requested
-#$desired_db = "CS143";
-$desired_db = "TEST";
+$desired_db = "CS143";
+//$desired_db = "TEST";
 
 // Connect to mysql and check for errors
 $db_connection = mysql_connect("localhost", "cs143", "");
@@ -123,7 +123,7 @@ if (!empty($movie_row)) {
     echo "</table><br />";
     
     // List imdb and rot ratings
-    echo "<h3>Critic Reviews</h3>";
+    echo "<h3>Critic Reviews:</h3>";
     echo "<table border=0 cellspacing=2 cellpadding=2>";
     echo "<tr><td>IMDB: </td>";
     $num_rows = mysql_num_rows($rating_rs);

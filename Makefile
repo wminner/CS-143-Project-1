@@ -2,9 +2,10 @@
 # Maybe not necessary, but at least you can use it to clean old buffers and make
 # the distribution reliably
 
-UID = 503392352
-DB = TEST
-# DB = CS143
+#UID = 503392352
+UID = 703549234
+#DB = TEST
+DB = CS143
 
 1A_DIST_SOURCES = readme.txt team.txt sql/create.sql sql/load.sql sql/queries.sql \
 	query.php sql/violate.sql

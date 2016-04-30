@@ -64,8 +64,8 @@
 		$valid_identity = array("actor", "director");
 
 		if(isset($_GET['submit'])){
-			//$desired_db = "CS143";
-			$desired_db = "TEST";
+			$desired_db = "CS143";
+			//$desired_db = "TEST";
 
 			// Connect to mysql and check for errors
 			$db_connection = mysql_connect("localhost", "cs143", "");

@@ -38,8 +38,8 @@
 $query_str = $result = "";
 $actor = $movie = True;
 $actor_query = $movie_query = "";
-#$desired_db = "CS143";
-$desired_db = "TEST";
+$desired_db = "CS143";
+//$desired_db = "TEST";
 
 // Connect to mysql and check for errors
 $db_connection = mysql_connect("localhost", "cs143", "");
